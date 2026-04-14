@@ -81,21 +81,26 @@ export default function AnilarPage() {
             {images.map((img, i) => (
               <motion.div
                 key={img.id || i}
-                className="gallery-item"
+                className={`gallery-item${img.isVideo ? ' gallery-item-video' : ''}`}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.04 }}
                 onClick={() => setLightbox(img)}
                 whileHover={{ scale: 1.02 }}
               >
-                <img src={img.thumbnailUrl} alt={img.name || `Anı ${i + 1}`} loading="lazy" />
+                {img.isVideo ? (
+                  <div className="video-thumb-placeholder">
+                    <img src="/video-thumbnail.png" alt="Video" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                ) : (
+                  <img src={img.thumbnailUrl} alt={img.name || `Anı ${i + 1}`} loading="lazy" />
+                )}
               </motion.div>
             ))}
           </motion.div>
         )}
       </div>
 
-      {/* Lightbox */}
       <AnimatePresence>
         {lightbox && (
           <motion.div
@@ -113,7 +118,17 @@ export default function AnilarPage() {
               onClick={e => e.stopPropagation()}
             >
               <button className="lightbox-close" onClick={() => setLightbox(null)}>✕</button>
-              <img src={lightbox.url} alt={lightbox.name} />
+              {lightbox.isVideo ? (
+                <iframe
+                  src={lightbox.previewUrl}
+                  width="100%"
+                  height="480"
+                  allow="autoplay"
+                  style={{ border: 'none', borderRadius: '8px' }}
+                />
+              ) : (
+                <img src={lightbox.imageUrl} alt={lightbox.name} />
+              )}
               {lightbox.name && <p className="lightbox-caption">{lightbox.name}</p>}
             </motion.div>
           </motion.div>
