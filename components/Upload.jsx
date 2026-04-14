@@ -40,6 +40,7 @@ export default function Upload() {
           body: JSON.stringify({
             name: fItem.file.name,
             mimeType: fItem.file.type || 'application/octet-stream',
+            origin: window.location.origin,
           }),
         });
 

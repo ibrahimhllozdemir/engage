@@ -1,36 +1,45 @@
 import { NextResponse } from 'next/server';
-import { google } from 'googleapis';
-import { drive, FOLDER_ID } from '@/lib/drive';
+import { auth, FOLDER_ID } from '@/lib/drive';
 
 export async function POST(request) {
   try {
-    const { name, mimeType } = await request.json();
+    const body = await request.json();
+    const { name, mimeType, origin: clientOrigin } = body;
 
     if (!name || !mimeType) {
       return NextResponse.json({ error: 'Eksik alan: name ve mimeType gerekli' }, { status: 400 });
     }
 
-    // Google API Client'ını kullanarak raw Access Token alıyoruz.
-    // Bu sayede tarayıcının doğrudan yükleme yapabileceği (Resumable) URL'yi fetch edebileceğiz.
-    const authClient = await drive.context._options.auth.getClient();
-    const { token } = await authClient.getAccessToken();
+    // Auth token al — doğrudan export edilen auth objesinden
+    const client = await auth.getClient();
+    const { token } = await client.getAccessToken();
 
-    const userOrigin = request.headers.get('origin') || '*';
+    // Origin: önce client'ın gönderdiğini kullan, yoksa header'dan al, yoksa host'tan türet
+    const userOrigin =
+      clientOrigin ||
+      request.headers.get('origin') ||
+      (() => {
+        const host = request.headers.get('host');
+        const proto = request.headers.get('x-forwarded-proto') || 'https';
+        return host ? `${proto}://${host}` : null;
+      })();
 
-    // 1. Adım: Resumable Upload oturumu başlat
-    const initRes = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'X-Upload-Content-Type': mimeType,
-        'Origin': userOrigin
-      },
-      body: JSON.stringify({
-        name,
-        parents: [FOLDER_ID]
-      })
-    });
+    const initHeaders = {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'X-Upload-Content-Type': mimeType,
+    };
+    if (userOrigin) initHeaders['Origin'] = userOrigin;
+
+    // Google Drive'dan tek kullanımlık Resumable Upload URL'si iste
+    const initRes = await fetch(
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true',
+      {
+        method: 'POST',
+        headers: initHeaders,
+        body: JSON.stringify({ name, parents: [FOLDER_ID] }),
+      }
+    );
 
     if (!initRes.ok) {
       const errText = await initRes.text();
@@ -38,9 +47,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Google Drive bağlantısı kurulamadı.' }, { status: initRes.status });
     }
 
-    // 2. Adım: Google'ın verdiği tek kullanımlık yükleme URL'sini (Location = Bilet) al
     const uploadUrl = initRes.headers.get('location');
-
     if (!uploadUrl) {
       return NextResponse.json({ error: 'Upload URL oluşturulamadı.' }, { status: 500 });
     }
