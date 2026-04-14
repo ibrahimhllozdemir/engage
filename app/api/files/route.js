@@ -4,7 +4,7 @@ import { drive, FOLDER_ID } from '@/lib/drive';
 export async function GET() {
   try {
     const res = await drive.files.list({
-      q: `'${FOLDER_ID}' in parents and (mimeType contains 'image/' or mimeType contains 'video/') and trashed = false`,
+      q: `'${FOLDER_ID}' in parents and mimeType contains 'image/' and trashed = false`,
       fields: 'files(id, name, createdTime)',
       orderBy: 'createdTime desc',
       pageSize: 100,

@@ -21,14 +21,7 @@ export default function Upload() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 
-      'image/*': ['.png', '.jpg', '.jpeg', '.heic'],
-      'video/*': ['.mp4', '.mov', '.avi']
-    },
-    maxSize: 4.5 * 1024 * 1024, // 4.5MB Vercel limit
-    onDropRejected: () => {
-      alert("Vercel altyapısı nedeniyle tek seferde maksimum 4.5MB boyutunda dosyalar yüklenebilir. Lütfen daha kısa videolar veya daha küçük fotoğraflar seçin.");
-    }
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.heic'] },
   });
 
   const handleUpload = async () => {
@@ -98,9 +91,9 @@ export default function Upload() {
           <input {...getInputProps()} />
           <FiCamera className="dropzone-icon" />
           <h3 className="dropzone-text">
-            {isDragActive ? 'Dosyaları buraya bırakın' : 'Fotoğraf / Video Seç veya Sürükle'}
+            {isDragActive ? 'Fotoğrafları buraya bırakın' : 'Fotoğraf Seç veya Sürükle Bırak'}
           </h3>
-          <p className="dropzone-hint">Görsel ve kısa videolar kabul edilmektedir (Maksimum 4.5 MB)</p>
+          <p className="dropzone-hint">Sadece görseller kabul edilmektedir (PNG, JPG, HEIC)</p>
         </div>
 
         {files.length > 0 && (
