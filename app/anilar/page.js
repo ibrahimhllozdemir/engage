@@ -124,20 +124,30 @@ export default function AnilarPage() {
                     e.preventDefault();
                     e.stopPropagation();
                     try {
-                      // Fetch the actual image to force a device-level download (Save Photo)
                       const res = await fetch(lightbox.imageUrl || lightbox.downloadUrl);
                       if (!res.ok) throw new Error('Network error');
                       const blob = await res.blob();
-                      const blobUrl = URL.createObjectURL(blob);
-                      const a = document.createElement('a');
-                      a.href = blobUrl;
-                      a.download = lightbox.name || 'foto.jpg';
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
-                      URL.revokeObjectURL(blobUrl);
+                      
+                      // Telefondaki "Paylaş/Galeriye Kaydet" menüsünü (Share Sheet) açmayı dener
+                      const file = new File([blob], lightbox.name || 'foto.jpg', { type: blob.type || 'image/jpeg' });
+                      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                          files: [file],
+                          title: 'Anıyı Kaydet',
+                        });
+                      } else {
+                        // Eğer telefon desteklemiyorsa (eski cihaz/PC) eski indirme mantığına döner
+                        const blobUrl = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = blobUrl;
+                        a.download = lightbox.name || 'foto.jpg';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(blobUrl);
+                      }
                     } catch (err) {
-                      // Fallback for CORS issues (especially videos)
+                      // Fetch veya Share patlarsa Google'ın indirme sayfasına atar
                       window.open(lightbox.downloadUrl, '_blank');
                     }
                   }}
