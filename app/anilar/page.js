@@ -118,9 +118,32 @@ export default function AnilarPage() {
               onClick={e => e.stopPropagation()}
             >
               <div className="lightbox-actions">
-                <a href={lightbox.downloadUrl} className="lightbox-download" target="_blank" rel="noopener noreferrer" download>
+                <button 
+                  className="lightbox-download" 
+                  onClick={async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    try {
+                      // Fetch the actual image to force a device-level download (Save Photo)
+                      const res = await fetch(lightbox.imageUrl || lightbox.downloadUrl);
+                      if (!res.ok) throw new Error('Network error');
+                      const blob = await res.blob();
+                      const blobUrl = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = blobUrl;
+                      a.download = lightbox.name || 'foto.jpg';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      URL.revokeObjectURL(blobUrl);
+                    } catch (err) {
+                      // Fallback for CORS issues (especially videos)
+                      window.open(lightbox.downloadUrl, '_blank');
+                    }
+                  }}
+                >
                   İndir 📥
-                </a>
+                </button>
                 <button className="lightbox-close" onClick={() => setLightbox(null)}>✕</button>
               </div>
               {lightbox.isVideo ? (
