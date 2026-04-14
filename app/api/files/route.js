@@ -20,6 +20,7 @@ export async function GET() {
       thumbnailUrl: `https://drive.google.com/thumbnail?id=${file.id}&sz=w400`,
       imageUrl: `https://lh3.googleusercontent.com/d/${file.id}`,
       previewUrl: `https://drive.google.com/file/d/${file.id}/preview`,
+      downloadUrl: `https://drive.google.com/uc?export=download&id=${file.id}`,
     }));
 
     return NextResponse.json({ files });

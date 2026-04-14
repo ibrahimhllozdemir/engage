@@ -117,7 +117,12 @@ export default function AnilarPage() {
               exit={{ opacity: 0, scale: 0.85 }}
               onClick={e => e.stopPropagation()}
             >
-              <button className="lightbox-close" onClick={() => setLightbox(null)}>✕</button>
+              <div className="lightbox-actions">
+                <a href={lightbox.downloadUrl} className="lightbox-download" target="_blank" rel="noopener noreferrer" download>
+                  İndir 📥
+                </a>
+                <button className="lightbox-close" onClick={() => setLightbox(null)}>✕</button>
+              </div>
               {lightbox.isVideo ? (
                 <iframe
                   src={lightbox.previewUrl}
