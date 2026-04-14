@@ -204,7 +204,7 @@ export default function Upload() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <strong>Teşekkürler!</strong> Anılarınız anında Drive'a yüklendi 🎉
+            <strong>Teşekkürler!</strong> Anılarınız sisteme başarıyla yüklendi 🤍
           </motion.div>
         )}
 

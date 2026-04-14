@@ -22,6 +22,10 @@ const greatVibes = Great_Vibes({
 export const metadata = {
   title: 'Ezgi & İbrahim - Nişan Töreni',
   description: 'Ezgi ve İbrahim\'in nişan törenine hoş geldiniz. Anılarınızı bizimle paylaşın.',
+  icons: {
+    icon: '/favicon.png',
+    apple: '/favicon.png',
+  },
 };
 
 export default function RootLayout({ children }) {
