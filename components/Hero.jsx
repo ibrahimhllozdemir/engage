@@ -25,7 +25,7 @@ export default function Hero() {
             transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity, repeatType: 'loop', delay: 1.2 }}
           >
             <img
-              src="https://cdn.prod.website-files.com/6734e1f8cd6c295bf28035c6/69ed24d18e555cf1c7a98e20_ibrahimezgiwed.jpg"
+              src="https://cdn.prod.website-files.com/6734e1f8cd6c295bf28035c6/69ed27b14c3094cd87bf6cd1_ibrahimezgiwed2.jpg"
               alt="Ezgi & İbrahim"
             />
             <div className="polaroid-caption">Ezgi & İbrahim</div>
