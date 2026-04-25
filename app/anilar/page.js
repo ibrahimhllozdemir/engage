@@ -93,7 +93,7 @@ export default function AnilarPage() {
                     <img src="/video-thumbnail.png" alt="Video" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                   </div>
                 ) : (
-                  <img src={img.thumbnailUrl} alt={img.name || `Anı ${i + 1}`} loading="lazy" />
+                  <img src={img.thumbnailUrl} alt={img.name || `Anı ${i + 1}`} loading="lazy" referrerPolicy="no-referrer" />
                 )}
               </motion.div>
             ))}
@@ -165,7 +165,7 @@ export default function AnilarPage() {
                   style={{ border: 'none', borderRadius: '8px' }}
                 />
               ) : (
-                <img src={lightbox.imageUrl} alt={lightbox.name} />
+                <img src={lightbox.imageUrl} alt={lightbox.name} referrerPolicy="no-referrer" />
               )}
               {lightbox.name && <p className="lightbox-caption">{lightbox.name}</p>}
             </motion.div>
